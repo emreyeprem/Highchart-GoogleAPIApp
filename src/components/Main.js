@@ -7,19 +7,42 @@ import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts/highstock';
 import '../css/site.css'
 
-let list_by_meterID_baseload = Data.get_all_obj_by_type(Data.meterID['1111405'], 'Type' , 'BaseLoad');
-Data.get_kWh_by_type(list_by_meterID_baseload)
-
-console.log(Data.non_dublicate_list_of_meterID_in_data)
 
 
 class Main extends Component {
   constructor(props){
     super(props)
     this.state={
-      meterID_list : Data.non_dublicate_list_of_meterID_in_data
+      meterID_list : Data.non_dublicate_list_of_meterID_in_data,
+      selected_meterID : "",
+      baseLoad_data : [],
+      WSL_data: [],
+      TSL_data : []
     }
   }
+  getKWhData = (meterID) =>{
+    console.log(meterID)
+    let list_by_meterID_baseload = Data.get_all_obj_by_type(Data.meterID[meterID], 'Type' , 'BaseLoad');
+    let kWh_data_baseload = Data.get_kWh_by_type(list_by_meterID_baseload);
+    this.setState({ baseLoad_data:  kWh_data_baseload});
+
+    let list_by_meterID_TSL = Data.get_all_obj_by_type(Data.meterID[meterID], 'Type' , 'TSL');
+    let kWh_data_TSL = Data.get_kWh_by_type(list_by_meterID_TSL);
+    this.setState({ TSL_data:  kWh_data_TSL});
+
+    let list_by_meterID_WSL = Data.get_all_obj_by_type(Data.meterID[meterID], 'Type' , 'WSL');
+    let kWh_data_WSL = Data.get_kWh_by_type(list_by_meterID_WSL);
+    this.setState({ WSL_data:  kWh_data_WSL});
+
+  }
+  handleChange = (event) => {
+    console.log(event.target.value)
+        this.setState({ selected_meterID: event.target.value }, ()=>{
+            this.getKWhData(this.state.selected_meterID);
+        })
+
+    }
+
   render() {
 
     const options = {
@@ -101,27 +124,29 @@ class Main extends Component {
 
       series: [
         {    name: 'BaseLoad',
-
+            data: this.state.baseLoad_data
         },
         {    name: 'WSL',
-
-
+              data: this.state.WSL_data
         },
         {    name: 'TSL',
-
+            data: this.state.TSL_data
 
         },
 
       ],
     };
-    let menuItems = this.state.meterID_list.map((each)=>{
-      return  <option value = {each}>{ each }</option>
+    let menuItems = this.state.meterID_list.map((each, index)=>{
+      return  <option key = {index} value = {each}> Meter ID: { each }</option>
     })
+
+
+
+
     return (
       <div className="App">
 
-      <select id="dropdownMeterId">
-      <option selected>Select a meter ID &#9660;</option>
+      <select id="dropdownMeterId" onChange={this.handleChange} >
       {menuItems}
       </select>
       <HighchartsReact
