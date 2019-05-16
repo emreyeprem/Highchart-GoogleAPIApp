@@ -1,5 +1,6 @@
-#dropdownMeterId {
+.dropdownMeterId {
   background-color: lightcyan !important;
   border-radius: 4px !important;
   border-color: cyan !important;
+  margin: 10px !important;
 }

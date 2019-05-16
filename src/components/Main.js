@@ -9,16 +9,21 @@ import '../css/site.css'
 
 
 
+
 class Main extends Component {
   constructor(props){
     super(props)
     this.state={
       meterID_list : Data.non_dublicate_list_of_meterID_in_data,
-      selected_meterID : "",
+      selected_meterID : "0115714",
       baseLoad_data : [],
       WSL_data: [],
-      TSL_data : []
+      TSL_data : [],
+      graphType : "area"
     }
+  }
+  componentDidMount = ()=>{
+    this.getKWhData(this.state.selected_meterID);
   }
   getKWhData = (meterID) =>{
     console.log(meterID)
@@ -36,22 +41,30 @@ class Main extends Component {
 
   }
   handleChange = (event) => {
-    console.log(event.target.value)
-        this.setState({ selected_meterID: event.target.value }, ()=>{
+        this.setState({
+          ...this.state,
+          selected_meterID: event.target.value }, ()=>{
             this.getKWhData(this.state.selected_meterID);
         })
 
     }
-
+  handleGraphType = (event) => {
+      this.setState({
+        ...this.state,
+        graphType : event.target.value
+      })
+    }
   render() {
-
     const options = {
+
+
       title: {
         text: 'Energy Consumption',
       },
       xAxis: {
            type: 'datetime',
-          max: Date.UTC(2018, 3, 17),
+          max: Date.UTC(2018, 3, 26),
+          min: Date.UTC(2018, 2, 27),
            tickInterval: 3600 * 1000 * 24,
 
       },
@@ -88,7 +101,7 @@ class Main extends Component {
        }
    },
       chart: {
-        type: 'area',
+        type: this.state.graphType,
         height: 500,
         zoomType: 'x',
 
@@ -115,6 +128,10 @@ class Main extends Component {
                 count: 6,
                 text: '6m'
             }, {
+                type: 'year',
+                count: 1,
+                text: '1y'
+            }, {
                 type: 'all',
                 text: 'All'
             }],
@@ -124,31 +141,37 @@ class Main extends Component {
 
       series: [
         {    name: 'BaseLoad',
-            data: this.state.baseLoad_data
-        },
-        {    name: 'WSL',
-              data: this.state.WSL_data
-        },
-        {    name: 'TSL',
-            data: this.state.TSL_data
+           data: this.state.baseLoad_data,
+           pointStart: Date.UTC(2018, 2, 27, 0 , 0),
+           pointInterval: 3600 * 1000, // one hour
+       },
+       {    name: 'WSL',
+             data: this.state.WSL_data,
+             pointStart: Date.UTC(2018, 2, 27, 0 , 0),
+             pointInterval: 3600 * 1000, // one hour
+       },
+       {    name: 'TSL',
+           data: this.state.TSL_data,
+           pointStart: Date.UTC(2018, 2, 27, 0 , 0),
+           pointInterval: 3600 * 1000, // one hour
 
-        },
+       },
 
       ],
     };
     let menuItems = this.state.meterID_list.map((each, index)=>{
-      return  <option key = {index} value = {each}> Meter ID: { each }</option>
-    })
-
-
-
-
+     return  <option key = {index} value = {each}> Meter ID: { each }</option>
+   })
     return (
       <div className="App">
-
-      <select id="dropdownMeterId" onChange={this.handleChange} >
-      {menuItems}
-      </select>
+      <select className="dropdownMeterId" onChange={this.handleChange} >
+    {menuItems}
+    </select>
+    <select className="dropdownMeterId" onChange={this.handleGraphType} >
+    <option value="area" selected>Area Graph</option>
+     <option value="line">Line Graph</option>
+     <option value="bar">Bar Graph</option>
+  </select>
       <HighchartsReact
       highcharts={Highcharts}
       constructorType={'stockChart'}
