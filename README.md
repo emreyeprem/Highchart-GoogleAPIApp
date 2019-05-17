@@ -1,5 +1,5 @@
 * **Highchart-API App:**
-<img src="highchart1.png" height="250px" width="550px">
+<img src="highchart1.png" height="350px" width="750px">
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
