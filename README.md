@@ -1,3 +1,7 @@
+* **Highchart-API App:**
+<img src="highchart1.png" height="100px" width="150px">
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
